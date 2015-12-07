@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity implements
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                geocode();
                 updateTravelTime();
             }
         });
@@ -104,28 +103,6 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
         RequestQueue queue = Volley.newRequestQueue(this);
-        queue.add(stringRequest);
-    }
-
-    protected void geocode(){
-        RequestQueue queue = Volley.newRequestQueue(this);
-        String query = String.valueOf(location.getText());
-        query = encode(query);
-        String url ="http://maps.googleapis.com/maps/api/geocode/json?address="+query;
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        GeocodeResponse geocodeResponse = gson.fromJson(response, GeocodeResponse.class);
-                        result.setText(geocodeResponse.results[0].formatted_address);
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                result.setText("whoops");
-            }
-        });
         queue.add(stringRequest);
     }
 
