@@ -2,7 +2,6 @@ package edu.bc.luntc.phonehome;
 
 import android.location.Location;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -23,24 +22,35 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.MutableDateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
+import edu.bc.luntc.phonehome.DurationAPI.DurationItem;
 import edu.bc.luntc.phonehome.DurationAPI.DurationResponse;
-import edu.bc.luntc.phonehome.Geocode.GeocodeResponse;
 
 public class MainActivity extends AppCompatActivity implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
 
-    private EditText location;
-    private EditText time;
-    private EditText contact;
-    private Button startButton;
-    private TextView result;
-    private GoogleApiClient mGoogleApiClient;
     Gson gson;
+    private EditText locationInput;
+    private EditText timeInput;
+    private EditText contactInput;
+    private TextView durationView;
+    private TextView travelStatusView;
+    private Button startButton;
+
+    private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
-    private TextView mLatitudeText;
-    private TextView mLongitudeText;
-    private TextView duration;
+
+    private double latitude = 42.336;
+    private double longitude = -71.0179;
+
+    private DurationItem duration;
+    private String travelStatus;
 
 
     @Override
@@ -56,16 +66,11 @@ public class MainActivity extends AppCompatActivity implements
 
         gson = new Gson();
 
-        location = (EditText) findViewById(R.id.location);
-        time = (EditText) findViewById(R.id.time);
-        contact = (EditText) findViewById(R.id.contact);
-        result = (TextView) findViewById(R.id.result);
-        mLatitudeText = (TextView) findViewById(R.id.mLatitudeText);
-        mLongitudeText = (TextView) findViewById(R.id.mLongitudeText);
-        duration = (TextView) findViewById(R.id.duration);
-        mLatitudeText.setText("42.336");
-        mLongitudeText.setText("-71.0179");
-
+        locationInput = (EditText) findViewById(R.id.location);
+        timeInput = (EditText) findViewById(R.id.time);
+        contactInput = (EditText) findViewById(R.id.contact);
+        durationView = (TextView) findViewById(R.id.duration);
+        travelStatusView = (TextView) findViewById(R.id.travelStatus);
 
         startButton = (Button) findViewById(R.id.startButton);
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -77,33 +82,57 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void updateTravelTime() {
-        String destination = location.getText().toString();
-        String current = String.valueOf(mLatitudeText.getText())+","+String.valueOf(mLongitudeText.getText());
-        System.out.println("destination:"+destination);
-        destination  = encode(destination);
-        System.out.println("destination:"+destination);
-        current = encode(current);
-        final String url = "http://maps.googleapis.com/maps/api/distancematrix/json?origins="+current+"&destinations="+destination;
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+        String durationRequest = buildDurationRequest();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, durationRequest,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         DurationResponse durationResponse = gson.fromJson(response, DurationResponse.class);
+                        duration = durationResponse.rows[0].elements[0].duration;
+                        durationView.setText(duration.text);
 
-                        System.out.println(url);
-                        System.out.println(response);
-
-                        String time = durationResponse.rows[0].elements[0].duration.text;
-                        duration.setText(time);
+                        updateTravelStatus();
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                duration.setText("duration not available");
+                durationView.setText("durationView not available");
             }
         });
         RequestQueue queue = Volley.newRequestQueue(this);
         queue.add(stringRequest);
+    }
+
+    private void updateTravelStatus() {
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("hh:mma");
+        String time = String.valueOf(timeInput.getText());
+        MutableDateTime goal = formatter.parseMutableDateTime(time);
+        goal.setYear(DateTime.now().getYear());
+        goal.setMonthOfYear(DateTime.now().getMonthOfYear());
+        goal.setDayOfMonth(DateTime.now().getDayOfMonth());
+
+        DateTime now = DateTime.now();
+        DateTime arrival = now.plusSeconds(duration.value);
+
+        if(arrival.isAfter(goal))
+            travelStatus = "You will be late!";
+        else
+            travelStatus = "You will be on time";
+
+        travelStatusView.setText(travelStatus);
+
+    }
+
+    private String buildDurationRequest() {
+        String destination = locationInput.getText().toString();
+        String current = latitude+","+longitude;
+        destination = encode(destination);
+        current = encode(current);
+        return "http://maps.googleapis.com/maps/api/distancematrix/json?"+
+                "origins="+current+
+                "&destinations="+ destination+
+                "&traffic_model=pessimistic"+
+                "&departure_time=now";
     }
 
     private String encode(String s) {
@@ -122,12 +151,8 @@ public class MainActivity extends AppCompatActivity implements
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
         if (mLastLocation != null) {
-            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-        }
-        else{
-            mLatitudeText.setText("42.336");
-            mLongitudeText.setText("-71.0179");
+            latitude = mLastLocation.getLatitude();
+            longitude = mLastLocation.getLongitude();
         }
     }
 
