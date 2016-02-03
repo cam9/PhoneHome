@@ -1,13 +1,22 @@
 package edu.bc.luntc.phonehome;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.SmsManager;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -23,7 +32,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.gson.Gson;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.MutableDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -45,17 +53,21 @@ public class MainActivity extends AppCompatActivity implements
 
     private GoogleApiClient mGoogleApiClient;
     private Location mLastLocation;
+    private AlarmManager alarmMgr;
 
     private double latitude = 42.336;
     private double longitude = -71.0179;
 
     private DurationItem duration;
     private String travelStatus;
+    private PendingIntent alarmIntent;
 
+    private MeetingModel meetingModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_main);
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -69,19 +81,25 @@ public class MainActivity extends AppCompatActivity implements
         locationInput = (EditText) findViewById(R.id.location);
         timeInput = (EditText) findViewById(R.id.time);
         contactInput = (EditText) findViewById(R.id.contact);
+
         durationView = (TextView) findViewById(R.id.duration);
         travelStatusView = (TextView) findViewById(R.id.travelStatus);
 
+        alarmMgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
         startButton = (Button) findViewById(R.id.startButton);
+
+        meetingModel = new MeetingModel(this);
+
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateTravelTime();
+                meetingModel.update(contactInput.getText(), locationInput.getText(), timeInput.getText());
             }
         });
     }
 
-    private void updateTravelTime() {
+    public void updateTravelTime() {
         String durationRequest = buildDurationRequest();
         StringRequest stringRequest = new StringRequest(Request.Method.GET, durationRequest,
                 new Response.Listener<String>() {
@@ -114,13 +132,28 @@ public class MainActivity extends AppCompatActivity implements
         DateTime now = DateTime.now();
         DateTime arrival = now.plusSeconds(duration.value);
 
-        if(arrival.isAfter(goal))
+        if(arrival.isAfter(goal)) {
             travelStatus = "You will be late!";
+            alertLate(arrival);
+        }
         else
             travelStatus = "You will be on time";
 
         travelStatusView.setText(travelStatus);
 
+    }
+
+    private void alertLate(DateTime arrival) {
+        String phone = String.valueOf(contactInput.getText());
+        String message = "Hey! I'm running late. I should be there at"+arrival.hourOfDay()+":"+arrival.minuteOfDay();
+
+        TelephonyManager manager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (manager.getPhoneType() != TelephonyManager.PHONE_TYPE_NONE) {
+            SmsManager.getDefault().sendTextMessage(phone, null, message, null, null);
+        }
+        else{
+            System.out.println(message + "to: "+ phone);
+        }
     }
 
     private String buildDurationRequest() {
@@ -144,7 +177,6 @@ public class MainActivity extends AppCompatActivity implements
         }
         return encoded;
     }
-
 
     @Override
     public void onConnected(Bundle bundle) {
