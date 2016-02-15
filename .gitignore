@@ -7,3 +7,4 @@
 /build
 /captures
 app/src/main/res/values/api_keys.xml
+app/fabric.properties
