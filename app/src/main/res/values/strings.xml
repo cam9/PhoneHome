@@ -1,8 +1,10 @@
 <resources>
     <string name="app_name">PhoneHome</string>
-    <string name="ifText">If I won\'t make it to...</string>
-    <string name="byText">by...</string>
+    <string name="ifText">If I won\'t make it to…</string>
+    <string name="byText">by…</string>
     <string name="thenText">Then tell</string>
     <string name="lateText">I\'ll be late</string>
-    <string name="startButton">run</string>
+    <string name="startButton">add</string>
+    <string name="title_activity_home_page">HomePage</string>
+    <string name="title_activity_main2">Main2Activity</string>
 </resources>

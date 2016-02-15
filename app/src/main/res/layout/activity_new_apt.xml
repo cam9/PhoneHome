@@ -7,15 +7,14 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="edu.bc.luntc.phonehome.MainActivity">
+    tools:context=".NewApointmentActivity">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
-        android:layout_alignParentBottom="true"
         android:weightSum="1">
 
         <TextView
@@ -26,11 +25,12 @@
             android:id="@+id/ifText"
             android:layout_gravity="center_horizontal" />
 
-        <EditText
+        <fragment
+            android:id="@+id/place_autocomplete_fragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/location"
-            android:layout_gravity="center_horizontal" />
+            android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+            />
 
         <TextView
             android:layout_width="wrap_content"
@@ -40,13 +40,36 @@
             android:id="@+id/byText"
             android:layout_gravity="center_horizontal" />
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="time"
-            android:ems="10"
-            android:id="@+id/time"
-            android:layout_gravity="center_horizontal" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:weightSum="4">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="1/1/16"
+                android:onClick="pickDate"
+                android:ems="10"
+                android:id="@+id/date"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="3"/>
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="6:00pm"
+                android:onClick="pickTime"
+                android:ems="10"
+                android:id="@+id/time"
+                android:layout_gravity="center_horizontal"
+                android:layout_weight="1"/>
+
+
+
+        </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -62,12 +85,12 @@
                 android:text="@string/thenText"
                 android:id="@+id/thenText" />
 
-            <EditText
+            <AutoCompleteTextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/contact"
                 android:layout_weight="1"
-                android:inputType="phone" />
+                />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -82,22 +105,7 @@
             android:layout_height="wrap_content"
             android:text="@string/startButton"
             android:id="@+id/startButton"
-            android:layout_gravity="center_horizontal" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Travel time: "
-            android:id="@+id/duration"
-            android:layout_gravity="center_horizontal" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Travel Status: "
-            android:id="@+id/travelStatus"
+            android:onClick="addNewApt"
             android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
