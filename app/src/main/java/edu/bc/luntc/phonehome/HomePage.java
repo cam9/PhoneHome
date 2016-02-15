@@ -1,30 +1,31 @@
 package edu.bc.luntc.phonehome;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class HomePage extends AppCompatActivity {
 
     private ListView aptList;
-    private ArrayList<Appointment> appointments;
+    private ArrayList<Appointment>  appointments ;
     private AppointmentAdapter adapter;
+
+    private AppointmentStorageManager appointmentStorageManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_page);
+
+        appointmentStorageManager = AppointmentStorageManager.getInstance();
 
         aptList = (ListView) findViewById(R.id.apt_list);
         appointments = readOrNewList(savedInstanceState);
@@ -44,22 +45,7 @@ public class HomePage extends AppCompatActivity {
         if(savedInstanceState != null)
             return (ArrayList<Appointment>)savedInstanceState.getSerializable("stuff");
         else{
-            ArrayList<Appointment> r = new ArrayList<>();
-            ObjectInputStream objectInputStream = null;
-            try{
-                objectInputStream = new ObjectInputStream(openFileInput("stuff"));
-                Appointment appointment = (Appointment) objectInputStream.readObject();
-                while (appointment != null) {
-                    r.add(appointment);
-                    appointment = (Appointment) objectInputStream.readObject();
-                }
-                objectInputStream.close();
-            }
-            catch (Exception e){
-                Log.e("PhoneHome", e.toString());
-                e.printStackTrace();
-            }
-            return r;
+            return appointmentStorageManager.readAppointments(this);
         }
     }
 
@@ -76,15 +62,7 @@ public class HomePage extends AppCompatActivity {
     @Override
     public void onDestroy(){
         super.onDestroy();
-        String FILENAME = "stuff";
-        try {
-            ObjectOutputStream fos = new ObjectOutputStream(openFileOutput(FILENAME, Context.MODE_PRIVATE));
-            for(Appointment appointment: appointments)
-                fos.writeObject(appointment);
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        appointmentStorageManager.storeAppointments(this, appointments);
     }
 
 
@@ -110,6 +88,6 @@ public class HomePage extends AppCompatActivity {
             }
         };
 
-        travelTimeAsyncTask.execute(new Object[]{appointment.getPlace(), this});
+        travelTimeAsyncTask.execute(appointment.getPlace(), this);
     }
 }
