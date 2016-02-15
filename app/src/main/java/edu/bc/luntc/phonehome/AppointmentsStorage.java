@@ -1,8 +1,6 @@
 package edu.bc.luntc.phonehome;
 
-/**
- * Created by cameronlunt on 2/15/16.
- */
+
 public class AppointmentsStorage {
     private static final String FILENAME = "edu.bc.luntc.phonehome.AppointmentsStorage.appointments";
 
