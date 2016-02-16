@@ -14,11 +14,15 @@ import java.util.List;
 
 public class HomePage extends AppCompatActivity {
 
+    private final String EXTRA_APPOINTMENTS = "edu.bc.luntc.phonehome.HomePage.appointments";
+    private static final int REQUEST_ADD_NEW = 1;
+
     private ListView aptList;
     private ArrayList<Appointment>  appointments ;
     private AppointmentAdapter adapter;
 
     private AppointmentStorageManager appointmentStorageManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,20 +47,20 @@ public class HomePage extends AppCompatActivity {
 
     private ArrayList<Appointment> readOrNewList(Bundle savedInstanceState) {
         if(savedInstanceState != null)
-            return (ArrayList<Appointment>)savedInstanceState.getSerializable("stuff");
+            return (ArrayList<Appointment>)savedInstanceState.getSerializable(EXTRA_APPOINTMENTS);
         else{
             return appointmentStorageManager.readAppointments(this);
         }
     }
 
-    public void addNew(View view){
+    public void launchNewAppointmentForm(View view){
         Intent intent = new Intent(this, NewApointmentActivity.class);
-        startActivityForResult(intent, 1);
+        startActivityForResult(intent, REQUEST_ADD_NEW);
     }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState){
-        savedInstanceState.putSerializable("stuff", appointments);
+        savedInstanceState.putSerializable(EXTRA_APPOINTMENTS, appointments);
     }
 
     @Override
@@ -69,12 +73,27 @@ public class HomePage extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
         if(resultCode == Activity.RESULT_OK) {
-            final Appointment appointment = (Appointment)
-                    data.getExtras().getSerializable(NewApointmentActivity.EXTRA_APPOINTMENT);
-            appointments.add(appointment);
-            adapter.notifyDataSetChanged();
-            updateTravelTime(appointment);
+            switch (requestCode){
+                case REQUEST_ADD_NEW:
+                    final Appointment appointment = (Appointment)
+                        data.getExtras().getSerializable(NewApointmentActivity.EXTRA_APPOINTMENT);
+                    addNewAppointment(appointment);
+                    break;
+            }
         }
+    }
+
+    private void addNewAppointment(Appointment appointment) {
+        appointments.add(appointment);
+        adapter.notifyDataSetChanged();
+        updateTravelTime(appointment);
+    }
+
+    /*
+      TODO
+     */
+    private void removeAppointment(){
+        
     }
 
     private void updateTravelTime(final Appointment appointment) {

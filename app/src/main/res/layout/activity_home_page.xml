@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         android:clickable="true"
-        android:onClick="addNew"
+        android:onClick="launchNewAppointmentForm"
         android:src="@drawable/ic_add_black_24dp"
         app:layout_anchor="@id/apt_list"
         app:layout_anchorGravity="bottom|right|end"/>
