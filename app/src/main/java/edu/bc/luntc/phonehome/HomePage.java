@@ -9,13 +9,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+
 import io.fabric.sdk.android.Fabric;
-import java.io.Serializable;
+
 import java.util.ArrayList;
-import java.util.List;
 
 public class HomePage extends AppCompatActivity {
 
@@ -56,7 +55,8 @@ public class HomePage extends AppCompatActivity {
         if(savedInstanceState != null)
             return (ArrayList<Appointment>)savedInstanceState.getSerializable(EXTRA_APPOINTMENTS);
         else{
-            return appointmentStorageManager.readAppointments(this);
+            //return appointmentStorageManager.readAppointments(this);
+            return appointmentStorageManager.queryAppointments(this);
         }
     }
 
@@ -95,12 +95,6 @@ public class HomePage extends AppCompatActivity {
         savedInstanceState.putSerializable(EXTRA_APPOINTMENTS, appointments);
     }
 
-    @Override
-    public void onDestroy(){
-        super.onDestroy();
-        appointmentStorageManager.storeAppointments(this, appointments);
-    }
-
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data){
@@ -119,14 +113,15 @@ public class HomePage extends AppCompatActivity {
         appointments.add(appointment);
         adapter.notifyDataSetChanged();
         updateTravelTime(appointment);
-        appointmentStorageManager.storeAppointments(this, appointments);
+        //appointmentStorageManager.storeAppointments(this, appointments);
+        appointmentStorageManager.addNewAppointment(appointment, this);
     }
 
 
     private void removeAppointment(int index){
         appointments.remove(index);
         adapter.notifyDataSetChanged();
-        appointmentStorageManager.storeAppointments(this, appointments);
+        //appointmentStorageManager.storeAppointments(this, appointments);
     }
 
     private void updateTravelTime(final Appointment appointment) {
