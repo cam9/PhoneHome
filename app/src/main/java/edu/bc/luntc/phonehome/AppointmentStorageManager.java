@@ -23,20 +23,25 @@ public class AppointmentStorageManager {
     }
 
 
-    public void storeAppointments(Context context, List<Appointment> appointments){
-        try {
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(context.openFileOutput(FILENAME, Context.MODE_APPEND));
-            try{
-                for(Appointment appointment: appointments){
-                    objectOutputStream.writeObject(appointment);
+    public void storeAppointments(final Context context, final  List<Appointment> appointments){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ObjectOutputStream objectOutputStream = new ObjectOutputStream(context.openFileOutput(FILENAME, Context.MODE_PRIVATE));
+                    try{
+                        for(Appointment appointment: appointments){
+                            objectOutputStream.writeObject(appointment);
+                        }
+                    }
+                    finally {
+                        objectOutputStream.close();
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
-            finally {
-                objectOutputStream.close();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        }).start();
     }
 
     public ArrayList<Appointment> readAppointments(Context context){

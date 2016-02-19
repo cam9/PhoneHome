@@ -91,6 +91,7 @@ public class HomePage extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState){
+        super.onSaveInstanceState(savedInstanceState);
         savedInstanceState.putSerializable(EXTRA_APPOINTMENTS, appointments);
     }
 
@@ -118,12 +119,14 @@ public class HomePage extends AppCompatActivity {
         appointments.add(appointment);
         adapter.notifyDataSetChanged();
         updateTravelTime(appointment);
+        appointmentStorageManager.storeAppointments(this, appointments);
     }
 
 
     private void removeAppointment(int index){
         appointments.remove(index);
         adapter.notifyDataSetChanged();
+        appointmentStorageManager.storeAppointments(this, appointments);
     }
 
     private void updateTravelTime(final Appointment appointment) {
