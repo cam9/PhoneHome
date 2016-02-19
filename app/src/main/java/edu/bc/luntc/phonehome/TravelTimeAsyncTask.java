@@ -31,6 +31,7 @@ public abstract class TravelTimeAsyncTask extends AsyncTask<Object, Integer, Str
     public void travelTimeFromHere(String destination, Context context) {
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
+        if(mLastLocation != null) {
             String durationRequest = buildDurationRequest(destination, mLastLocation);
             StringRequest stringRequest = new StringRequest(Request.Method.GET, durationRequest,
                     new Response.Listener<String>() {
@@ -46,6 +47,12 @@ public abstract class TravelTimeAsyncTask extends AsyncTask<Object, Integer, Str
             });
             RequestQueue queue = Volley.newRequestQueue(context);
             queue.add(stringRequest);
+        }
+        else{
+            duration = new DurationItem();
+            duration.value = 0;
+            duration.text = "travel time not available";
+        }
 
         }
 

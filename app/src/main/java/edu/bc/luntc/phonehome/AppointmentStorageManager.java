@@ -25,7 +25,7 @@ public class AppointmentStorageManager {
 
     public void storeAppointments(Context context, List<Appointment> appointments){
         try {
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(context.openFileOutput(FILENAME, Context.MODE_PRIVATE));
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(context.openFileOutput(FILENAME, Context.MODE_APPEND));
             try{
                 for(Appointment appointment: appointments){
                     objectOutputStream.writeObject(appointment);
@@ -43,7 +43,7 @@ public class AppointmentStorageManager {
         ArrayList<Appointment> appointments = new ArrayList<>();
         ObjectInputStream objectInputStream = null;
         try{
-            objectInputStream = new ObjectInputStream(context.openFileInput("stuff"));
+            objectInputStream = new ObjectInputStream(context.openFileInput(FILENAME));
             Appointment appointment = (Appointment) objectInputStream.readObject();
             try {
                 while (appointment != null) {

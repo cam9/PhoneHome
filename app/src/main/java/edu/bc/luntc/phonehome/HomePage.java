@@ -4,10 +4,15 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +32,7 @@ public class HomePage extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Fabric.with(this, new Crashlytics());
         setContentView(R.layout.activity_home_page);
 
         appointmentStorageManager = AppointmentStorageManager.getInstance();
@@ -42,6 +48,7 @@ public class HomePage extends AppCompatActivity {
                 updateTravelTime(appointments.get(position));
             }
         });
+        registerForContextMenu(aptList);
 
     }
 
@@ -57,6 +64,30 @@ public class HomePage extends AppCompatActivity {
         Intent intent = new Intent(this, NewApointmentActivity.class);
         startActivityForResult(intent, REQUEST_ADD_NEW);
     }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        if (v.getId() == R.id.apt_list) {
+            getMenuInflater().inflate(R.menu.appointment_context_menu, menu);
+            menu.setHeaderTitle("Choose an Option");
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem menuItem){
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuItem.getMenuInfo();
+
+        switch (menuItem.getItemId()){
+            case R.id.menu_delete_appointment:
+                removeAppointment(info.position);
+                return true;
+            case R.id.menu_refresh_appointment:
+                updateTravelTime(appointments.get(info.position));
+                return true;
+        }
+        return false;
+    }
+
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState){
@@ -89,11 +120,10 @@ public class HomePage extends AppCompatActivity {
         updateTravelTime(appointment);
     }
 
-    /*
-      TODO
-     */
-    private void removeAppointment(){
-        
+
+    private void removeAppointment(int index){
+        appointments.remove(index);
+        adapter.notifyDataSetChanged();
     }
 
     private void updateTravelTime(final Appointment appointment) {
