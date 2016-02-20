@@ -15,11 +15,9 @@ import java.util.List;
 import edu.bc.luntc.phonehome.AppointmentContract.AppointmentEntry;
 
 public class AppointmentStorageManager {
-    private static final String FILENAME = "edu.bc.luntc.phonehome.AppointmentsStorage.appointments";
-
     private static AppointmentStorageManager instance;
 
-    private AppointmentStorageManager(){};
+    private AppointmentStorageManager(){}
 
     public static AppointmentStorageManager getInstance(){
         if(instance == null)
@@ -36,7 +34,7 @@ public class AppointmentStorageManager {
         values.put(AppointmentEntry.COLUMN_NAME_TIME, appointment.getTime());
         values.put(AppointmentEntry.COLUMN_NAME_GUEST_PHONE, appointment.getPhonenumber());
         values.put(AppointmentEntry.COLUMN_NAME_PLACE, appointment.getPlace());
-        values.put(AppointmentEntry.COLUMN_NAME_ID, appointment.getId());
+        values.put(AppointmentEntry._ID, appointment.getId());
 
         db.insert(
                 AppointmentEntry.TABLE_NAME,
@@ -79,10 +77,13 @@ public class AppointmentStorageManager {
             String place = c.getString(c.getColumnIndex(AppointmentEntry.COLUMN_NAME_PLACE));
             String time = c.getString(c.getColumnIndex(AppointmentEntry.COLUMN_NAME_TIME));
             String phone = c.getString(c.getColumnIndex(AppointmentEntry.COLUMN_NAME_GUEST_PHONE));
+            String id = c.getLong(c.getColumnIndex(AppointmentEntry._ID))+"";
+
             Appointment appointment = new Appointment.Builder()
                     .place(place)
                     .time(time)
                     .phone(phone)
+                    .id(id)
                     .build();
 
             appointments.add(appointment);
