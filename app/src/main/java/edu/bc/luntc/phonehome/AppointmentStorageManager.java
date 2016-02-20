@@ -36,21 +36,13 @@ public class AppointmentStorageManager {
         values.put(AppointmentEntry.COLUMN_NAME_TIME, appointment.getTime());
         values.put(AppointmentEntry.COLUMN_NAME_GUEST_PHONE, appointment.getPhonenumber());
         values.put(AppointmentEntry.COLUMN_NAME_PLACE, appointment.getPlace());
+        values.put(AppointmentEntry.COLUMN_NAME_ID, appointment.getId());
 
         db.insert(
                 AppointmentEntry.TABLE_NAME,
                 AppointmentEntry.COLUMN_NAME_NULLABLE,
                 values);
         db.close();
-    }
-
-    public void deleteAppointment(Appointment appointment){
-//        // Define 'where' part of query.
-//        String selection = AppointmentEntry.COLUMN_NAME_ENTRY_ID + " LIKE ?";
-//        // Specify arguments in placeholder order.
-//        String[] selectionArgs = { String.valueOf(rowId) };
-//        // Issue SQL statement.
-//        db.delete(table_name, selection, selectionArgs);
     }
 
     public ArrayList<Appointment> queryAppointments(Context context){
@@ -102,4 +94,15 @@ public class AppointmentStorageManager {
     }
 
 
+    public void removeAppointment(Appointment appointment, Context context) {
+        AppointmentDbHelper mDbHelper = new AppointmentDbHelper(context);
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        // Define 'where' part of query.
+        String selection = AppointmentEntry._ID + " LIKE ?";
+        // Specify arguments in placeholder order.
+        String[] selectionArgs = { appointment.getId() };
+        // Issue SQL statement.
+        db.delete(AppointmentEntry.TABLE_NAME, selection, selectionArgs);
+    }
 }

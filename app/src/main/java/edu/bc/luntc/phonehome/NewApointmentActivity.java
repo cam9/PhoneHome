@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
@@ -16,6 +17,11 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
+
+import org.joda.time.DateTime;
+import org.joda.time.MutableDateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 
@@ -36,6 +42,8 @@ public class NewApointmentActivity extends FragmentActivity {
 
     private ArrayList<Contact> contacts;
     private final NewApointmentActivity ME = this;
+
+    private MutableDateTime jodaDateTime = new MutableDateTime();
 
 
     @Override
@@ -109,11 +117,14 @@ public class NewApointmentActivity extends FragmentActivity {
     public void addNewApt(View view) {
         if(aptPlace != null) {
             Intent returnHome = new Intent(this, HomePage.class);
+
             Appointment appointment = new Appointment.Builder()
                     .phone(contactInput.getText().toString())
                     .place(aptPlace.getAddress().toString())
-                    .time(timeInput.getText().toString())
+                    .time(jodaDateTime.toString())
+                    .id(System.currentTimeMillis()+"")
                     .build();
+
             returnHome.putExtra(EXTRA_APPOINTMENT, appointment);
             setResult(Activity.RESULT_OK, returnHome);
             finish();
@@ -134,18 +145,21 @@ public class NewApointmentActivity extends FragmentActivity {
 
 
     void newDate(int year, int month, int day) {
-        dateInput.setText(day+"/"+month+"/"+year);
+        jodaDateTime.setYear(year);
+        jodaDateTime.setMonthOfYear(month);
+        jodaDateTime.setDayOfMonth(day);
+
+        DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("MMMMM dd, yyyy");
+
+        dateInput.setText(dateFormatter.print(jodaDateTime));
     }
 
     void newTime(int hourOfDay, int minute) {
-        String am = "am";
-        if(hourOfDay > 12) {
-            am = "pm";
-            hourOfDay = hourOfDay % 12;
-        }
-        if(hourOfDay == 0) {
-            hourOfDay = 12;
-        }
-        timeInput.setText(hourOfDay+":"+minute+am);
+        jodaDateTime.setHourOfDay(hourOfDay);
+        jodaDateTime.setMinuteOfDay(minute);
+
+        DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("hh:mma");
+
+        timeInput.setText(timeFormatter.print(jodaDateTime));
     }
 }

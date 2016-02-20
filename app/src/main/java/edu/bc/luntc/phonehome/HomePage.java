@@ -49,13 +49,19 @@ public class HomePage extends AppCompatActivity {
         });
         registerForContextMenu(aptList);
 
+        if(savedInstanceState == null)
+            updateAllTravelTimes();
+    }
+
+    private void updateAllTravelTimes() {
+        for(Appointment appointment: appointments)
+            updateTravelTime(appointment);
     }
 
     private ArrayList<Appointment> readOrNewList(Bundle savedInstanceState) {
         if(savedInstanceState != null)
             return (ArrayList<Appointment>)savedInstanceState.getSerializable(EXTRA_APPOINTMENTS);
         else{
-            //return appointmentStorageManager.readAppointments(this);
             return appointmentStorageManager.queryAppointments(this);
         }
     }
@@ -119,9 +125,10 @@ public class HomePage extends AppCompatActivity {
 
 
     private void removeAppointment(int index){
+        Appointment appointment = appointments.get(index);
         appointments.remove(index);
         adapter.notifyDataSetChanged();
-        //appointmentStorageManager.storeAppointments(this, appointments);
+        appointmentStorageManager.removeAppointment(appointment, this);
     }
 
     private void updateTravelTime(final Appointment appointment) {

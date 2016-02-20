@@ -18,6 +18,7 @@ public final class AppointmentContract {
         public static final String COLUMN_NAME_GUEST_PHONE      = "guest_phone";
         public static final String COLUMN_NAME_GUEST_NAME       = "guest_name";
         public static final String COLUMN_NAME_GUEST_EMAIL      = "guest_email";
+        public static final String COLUMN_NAME_ID               = "id";
         public static final String COLUMN_NAME_NULLABLE         = "null";
     }
 }

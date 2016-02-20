@@ -7,6 +7,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import org.joda.time.MutableDateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.util.List;
 
 public class AppointmentAdapter extends ArrayAdapter<Appointment> {
@@ -35,10 +39,15 @@ public class AppointmentAdapter extends ArrayAdapter<Appointment> {
             holder = (AppointmentViewHolder) convertView.getTag();
         }
 
+        MutableDateTime jodaDateTime = MutableDateTime.parse(temp.getTime());
+
+        DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("hh:mma");
+        DateTimeFormatter dateFormatter = DateTimeFormat.forPattern("MMMMM dd, yyyy");
+
         holder.location.setText(temp.getPlace());
-        holder.time.setText(temp.getTime());
+        holder.time.setText(timeFormatter.print(jodaDateTime));
         holder.phone.setText(temp.getPhonenumber());
-        holder.date.setText("TODO");
+        holder.date.setText(dateFormatter.print(jodaDateTime));
         holder.travelTime.setText(temp.getTravelTime());
         return convertView;
     }

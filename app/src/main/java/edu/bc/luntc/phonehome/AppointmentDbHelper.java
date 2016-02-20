@@ -21,7 +21,8 @@ public class AppointmentDbHelper extends SQLiteOpenHelper {
                     AppointmentContract.AppointmentEntry.COLUMN_NAME_PLACE+ TEXT_TYPE + COMMA_SEP +
                     AppointmentContract.AppointmentEntry.COLUMN_NAME_GUEST_PHONE+ TEXT_TYPE + COMMA_SEP +
                     AppointmentContract.AppointmentEntry.COLUMN_NAME_GUEST_NAME+ TEXT_TYPE + COMMA_SEP +
-                    AppointmentContract.AppointmentEntry.COLUMN_NAME_GUEST_EMAIL+ TEXT_TYPE +
+                    AppointmentContract.AppointmentEntry.COLUMN_NAME_GUEST_EMAIL+ TEXT_TYPE + COMMA_SEP +
+                    AppointmentContract.AppointmentEntry.COLUMN_NAME_ID+ TEXT_TYPE +
             " )";
 
     private static final String SQL_DELETE_ENTRIES =
@@ -38,6 +39,12 @@ public class AppointmentDbHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL(SQL_DELETE_ENTRIES);
+        onCreate(db);
+    }
 
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        onUpgrade(db, oldVersion, newVersion);
     }
 }
