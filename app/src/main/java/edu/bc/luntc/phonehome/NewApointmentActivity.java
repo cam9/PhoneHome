@@ -109,12 +109,11 @@ public class NewApointmentActivity extends FragmentActivity {
     public void addNewApt(View view) {
         if(aptPlace != null) {
             Intent returnHome = new Intent(this, HomePage.class);
-            Appointment appointment = new Appointment(
-                    contactInput.getText().toString(),
-                    aptPlace.getAddress().toString(),
-                    timeInput.getText().toString(),
-                    dateInput.getText().toString()
-            );
+            Appointment appointment = new Appointment.Builder()
+                    .phone(contactInput.getText().toString())
+                    .place(aptPlace.getAddress().toString())
+                    .time(timeInput.getText().toString())
+                    .build();
             returnHome.putExtra(EXTRA_APPOINTMENT, appointment);
             setResult(Activity.RESULT_OK, returnHome);
             finish();

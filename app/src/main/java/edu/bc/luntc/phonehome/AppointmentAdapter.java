@@ -38,7 +38,7 @@ public class AppointmentAdapter extends ArrayAdapter<Appointment> {
         holder.location.setText(temp.getPlace());
         holder.time.setText(temp.getTime());
         holder.phone.setText(temp.getPhonenumber());
-        holder.date.setText(temp.getDate());
+        holder.date.setText("TODO");
         holder.travelTime.setText(temp.getTravelTime());
         return convertView;
     }

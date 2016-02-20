@@ -44,6 +44,15 @@ public class AppointmentStorageManager {
         db.close();
     }
 
+    public void deleteAppointment(Appointment appointment){
+//        // Define 'where' part of query.
+//        String selection = AppointmentEntry.COLUMN_NAME_ENTRY_ID + " LIKE ?";
+//        // Specify arguments in placeholder order.
+//        String[] selectionArgs = { String.valueOf(rowId) };
+//        // Issue SQL statement.
+//        db.delete(table_name, selection, selectionArgs);
+    }
+
     public ArrayList<Appointment> queryAppointments(Context context){
         AppointmentDbHelper mDbHelper = new AppointmentDbHelper(context);
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
@@ -74,14 +83,23 @@ public class AppointmentStorageManager {
         boolean hasNext = c.moveToFirst();
         ArrayList<Appointment> appointments = new ArrayList<>();
 
-        while(c.isAfterLast() == false){
+        while(!c.isAfterLast()){
             String place = c.getString(c.getColumnIndex(AppointmentEntry.COLUMN_NAME_PLACE));
             String time = c.getString(c.getColumnIndex(AppointmentEntry.COLUMN_NAME_TIME));
             String phone = c.getString(c.getColumnIndex(AppointmentEntry.COLUMN_NAME_GUEST_PHONE));
-            appointments.add(new Appointment(phone, place, time, null));
+            Appointment appointment = new Appointment.Builder()
+                    .place(place)
+                    .time(time)
+                    .phone(phone)
+                    .build();
+
+            appointments.add(appointment);
+
             c.moveToNext();
         }
 
         return appointments;
     }
+
+
 }
