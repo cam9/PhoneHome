@@ -6,11 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 import edu.bc.luntc.phonehome.AppointmentContract.AppointmentEntry;
 
@@ -77,7 +73,7 @@ public class AppointmentStorageManager {
             String place = c.getString(c.getColumnIndex(AppointmentEntry.COLUMN_NAME_PLACE));
             String time = c.getString(c.getColumnIndex(AppointmentEntry.COLUMN_NAME_TIME));
             String phone = c.getString(c.getColumnIndex(AppointmentEntry.COLUMN_NAME_GUEST_PHONE));
-            String id = c.getLong(c.getColumnIndex(AppointmentEntry._ID))+"";
+            int id = c.getInt(c.getColumnIndex(AppointmentEntry._ID));
 
             Appointment appointment = new Appointment.Builder()
                     .place(place)
@@ -102,7 +98,7 @@ public class AppointmentStorageManager {
         // Define 'where' part of query.
         String selection = AppointmentEntry._ID + " LIKE ?";
         // Specify arguments in placeholder order.
-        String[] selectionArgs = { appointment.getId() };
+        String[] selectionArgs = { appointment.getId()+"" };
         // Issue SQL statement.
         db.delete(AppointmentEntry.TABLE_NAME, selection, selectionArgs);
     }

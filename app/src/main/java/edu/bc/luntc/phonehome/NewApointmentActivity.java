@@ -122,7 +122,7 @@ public class NewApointmentActivity extends FragmentActivity {
                     .phone(contactInput.getText().toString())
                     .place(aptPlace.getAddress().toString())
                     .time(jodaDateTime.toString())
-                    .id(System.currentTimeMillis()+"")
+                    .id(System.currentTimeMillis())
                     .build();
 
             returnHome.putExtra(EXTRA_APPOINTMENT, appointment);

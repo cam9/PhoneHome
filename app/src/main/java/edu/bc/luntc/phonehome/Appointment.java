@@ -8,7 +8,7 @@ public class Appointment implements Serializable{
     private String time;
     private String travelTime;
 
-    private String id;
+    private long id;
 
     private Appointment(){}
 
@@ -36,7 +36,7 @@ public class Appointment implements Serializable{
         return place;
     }
 
-    public String getId(){
+    public long getId(){
         return id;
     }
 
@@ -47,7 +47,7 @@ public class Appointment implements Serializable{
         private String time = "";
         private String date = "";
         private String travelTime = "";
-        private String id = "";
+        private long id = -1;
 
         public Builder phone(String val){
             phone  = val; return this;
@@ -58,7 +58,7 @@ public class Appointment implements Serializable{
         public Builder time(String val){
             time = val; return this;
         }
-        public Builder id(String val){
+        public Builder id(long val){
             id = val; return this;
         }
 
