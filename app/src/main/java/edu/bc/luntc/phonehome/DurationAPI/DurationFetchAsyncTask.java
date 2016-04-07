@@ -1,8 +1,11 @@
-package edu.bc.luntc.phonehome;
+package edu.bc.luntc.phonehome.DurationAPI;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.support.v4.app.ActivityCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -19,8 +22,9 @@ import java.net.URLEncoder;
 
 import edu.bc.luntc.phonehome.DurationAPI.DurationItem;
 import edu.bc.luntc.phonehome.DurationAPI.DurationResponse;
+import edu.bc.luntc.phonehome.R;
 
-public abstract class TravelTimeAsyncTask extends AsyncTask<Object, Integer, String>{
+public abstract class DurationFetchAsyncTask extends AsyncTask<Object, Integer, String> {
 
     Gson gson = new Gson();
 
@@ -29,6 +33,16 @@ public abstract class TravelTimeAsyncTask extends AsyncTask<Object, Integer, Str
     private DurationItem duration;
 
     public void travelTimeFromHere(String destination, Context context) {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
         if(mLastLocation != null) {
@@ -51,10 +65,9 @@ public abstract class TravelTimeAsyncTask extends AsyncTask<Object, Integer, Str
         else{
             duration = new DurationItem();
             duration.value = 0;
-            duration.text = "travel time not available";
+            duration.text = context.getString(R.string.travel_time_unavailable);
         }
-
-        }
+    }
 
 
     private String buildDurationRequest(String destination, Location mLastLocation) {

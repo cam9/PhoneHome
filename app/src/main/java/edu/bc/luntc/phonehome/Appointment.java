@@ -3,10 +3,17 @@ package edu.bc.luntc.phonehome;
 import java.io.Serializable;
 
 public class Appointment implements Serializable{
+    public static final String TRAVEL_MODE_WALK = "walk";
+    public static final String TRAVEL_MODE_BIKE = "bike";
+    public static final String TRAVEL_MODE_PUBLIC_TRANSIT = "public_transit";
+    public static final String TRAVEL_MODE_DRIVE = "drive";
+
+
     private String phone;
     private String place;
     private String time;
     private String travelTime;
+    private String plannedTravelMode;
 
     private long id;
 

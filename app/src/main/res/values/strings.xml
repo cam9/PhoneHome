@@ -5,8 +5,9 @@
     <string name="thenText">Then tell</string>
     <string name="lateText">I\'ll be late</string>
     <string name="startButton">add</string>
-    <string name="title_activity_home_page">HomePage</string>
+    <string name="title_activity_home_page">PhoneHome</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="refresh">refresh</string>
     <string name="delete">delete</string>
+    <string name="travel_time_unavailable">travel time not available</string>
 </resources>

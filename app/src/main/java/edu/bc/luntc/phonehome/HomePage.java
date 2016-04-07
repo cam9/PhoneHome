@@ -12,13 +12,14 @@ import android.widget.ListView;
 
 import com.crashlytics.android.Crashlytics;
 
+import edu.bc.luntc.phonehome.DurationAPI.DurationFetchAsyncTask;
 import io.fabric.sdk.android.Fabric;
 
 import java.util.ArrayList;
 
 public class HomePage extends AppCompatActivity {
 
-    private final String EXTRA_APPOINTMENTS = "edu.bc.luntc.phonehome.HomePage.appointments";
+    private static final String EXTRA_APPOINTMENTS = "edu.bc.luntc.phonehome.HomePage.appointments";
     private static final int REQUEST_ADD_NEW = 1;
 
     private ListView aptList;
@@ -132,7 +133,7 @@ public class HomePage extends AppCompatActivity {
     }
 
     private void updateTravelTime(final Appointment appointment) {
-        TravelTimeAsyncTask travelTimeAsyncTask = new TravelTimeAsyncTask(){
+        DurationFetchAsyncTask durationFetchAsyncTask = new DurationFetchAsyncTask(){
             @Override
             protected void onPostExecute(String result){
                 appointment.setTravelTime(result);
@@ -142,6 +143,6 @@ public class HomePage extends AppCompatActivity {
             }
         };
 
-        travelTimeAsyncTask.execute(appointment.getPlace(), this);
+        durationFetchAsyncTask.execute(appointment.getPlace(), this);
     }
 }
